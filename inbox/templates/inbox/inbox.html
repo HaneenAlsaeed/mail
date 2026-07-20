@@ -1,0 +1,271 @@
+{% extends "inbox/layout.html" %}
+{% load static %}
+
+{% block body %}
+<!-- Application Wrapper -->
+<div class="app-layout d-flex flex-column min-vh-100 bg-body-tertiary">
+    
+    <!-- Top Navigation Bar -->
+    <header class="sticky-top bg-white border-bottom shadow-sm">
+        <nav class="navbar navbar-expand-lg py-2">
+            <div class="container-fluid px-3 px-lg-4">
+                
+                <!-- Brand Header -->
+                <a class="navbar-brand d-flex align-items-center gap-2 text-primary fw-bold fs-5 me-4" href="#">
+                    <div class="brand-icon-wrapper rounded-3 bg-primary bg-opacity-10 p-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-envelope-fill fs-4 text-primary"></i>
+                    </div>
+                    <span class="tracking-tight text-dark fw-bold">CS50<span class="text-primary">Mail</span></span>
+                </a>
+
+                <!-- Mobile Toggler -->
+                <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Collapsible Content -->
+                <div class="collapse navbar-collapse mt-2 mt-lg-0" id="topNavbar">
+                    
+                    <!-- Primary Navigation Links -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1 gap-lg-2">
+                        <li class="nav-item">
+                            <button class="nav-link btn btn-link text-start rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2 active" id="inbox">
+                                <i class="bi bi-inbox-fill"></i>
+                                <span>Inbox</span>
+                                <span class="badge bg-primary rounded-pill ms-auto ms-lg-1" id="unread-count" style="display: none;">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link btn btn-link text-start rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2" id="sent">
+                                <i class="bi bi-send-fill"></i>
+                                <span>Sent</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link btn btn-link text-start rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2" id="archived">
+                                <i class="bi bi-archive-fill"></i>
+                                <span>Archived</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Right Side Actions & User Info -->
+                    <div class="d-flex align-items-center gap-3 pt-2 pt-lg-0 border-top border-lg-0">
+                        <button class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2" id="compose">
+                            <i class="bi bi-pencil-square fs-6"></i>
+                            <span>Compose</span>
+                        </button>
+
+                        <div class="vr d-none d-lg-block mx-1"></div>
+
+                        <!-- User Profile Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-light rounded-pill px-3 py-2 d-flex align-items-center gap-2 border shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="avatar-circle rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 13px;">
+                                    {{ request.user.email|slice:":1"|upper }}
+                                </div>
+                                <span class="small fw-semibold text-dark d-none d-sm-inline" id="user-email-display">{{ request.user.email }}</span>
+                                <i class="bi bi-chevron-down small text-secondary"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2 mt-2">
+                                <li class="px-3 py-2 text-muted small border-bottom mb-1">
+                                    Signed in as<br><strong class="text-dark">{{ request.user.email }}</strong>
+                                </li>
+                                <li>
+                                    <a class="dropdown-menu-item text-danger d-flex align-items-center gap-2 rounded-2 px-3 py-2 small fw-medium text-decoration-none" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right"></i> Log out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container-fluid px-3 px-md-4 px-xl-5 py-4 flex-grow-1">
+        
+        <!-- Dismissible Alert Area -->
+        <div id="alert-container" class="mb-3"></div>
+
+        <!-- Mailbox View (Inbox, Sent, Archived) -->
+        <section id="emails-view" class="view-section">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-3 p-md-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <h4 class="card-title fw-bold text-dark mb-0" id="mailbox-title">Inbox</h4>
+                        <span class="badge bg-light text-secondary border rounded-pill px-3 py-2 fw-medium" id="mailbox-count">0 messages</span>
+                    </div>
+
+                    <!-- Search Filter & Quick Actions -->
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <div class="input-group search-input-group shadow-none me-2" style="max-width: 280px;">
+                            <span class="input-group-text bg-light border-end-0 text-secondary ps-3"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control bg-light border-start-0 ps-0 shadow-none" id="search-emails" placeholder="Search emails...">
+                        </div>
+                        <button class="btn btn-light rounded-circle p-2 border shadow-none" id="btn-refresh-mailbox" title="Refresh">
+                            <i class="bi bi-arrow-clockwise text-secondary"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card Body / List View -->
+                <div class="card-body p-0">
+                    <!-- Skeleton Loader State -->
+                    <div id="skeleton-loader" class="p-3" style="display: none;">
+                        <div class="skeleton-card mb-2 p-3 rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="skeleton-text skeleton-width-20"></div>
+                                <div class="skeleton-text skeleton-width-10"></div>
+                            </div>
+                            <div class="skeleton-text skeleton-width-40 mb-2"></div>
+                            <div class="skeleton-text skeleton-width-80"></div>
+                        </div>
+                        <div class="skeleton-card mb-2 p-3 rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="skeleton-text skeleton-width-20"></div>
+                                <div class="skeleton-text skeleton-width-10"></div>
+                            </div>
+                            <div class="skeleton-text skeleton-width-40 mb-2"></div>
+                            <div class="skeleton-text skeleton-width-80"></div>
+                        </div>
+                        <div class="skeleton-card mb-2 p-3 rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="skeleton-text skeleton-width-20"></div>
+                                <div class="skeleton-text skeleton-width-10"></div>
+                            </div>
+                            <div class="skeleton-text skeleton-width-40 mb-2"></div>
+                            <div class="skeleton-text skeleton-width-80"></div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State Illustration -->
+                    <div id="empty-state" class="text-center py-5 px-3" style="display: none;">
+                        <div class="empty-icon-wrapper mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-inbox text-secondary fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1" id="empty-state-title">Your mailbox is empty</h5>
+                        <p class="text-secondary small mb-0" id="empty-state-desc">There are no messages to display right now.</p>
+                    </div>
+
+                    <!-- Dynamic List Container -->
+                    <div id="emails-list" class="emails-list-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Email Details View -->
+        <section id="email-detail-view" class="view-section" style="display: none;">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                
+                <!-- Action Toolbar Header -->
+                <div class="card-header bg-white border-bottom p-3 p-md-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary rounded-pill px-3 py-1-5 fw-semibold d-flex align-items-center gap-2" id="btn-back">
+                        <i class="bi bi-arrow-left"></i> Back to Mailbox
+                    </button>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-primary rounded-pill px-3 py-1-5 fw-semibold d-flex align-items-center gap-2" id="btn-reply">
+                            <i class="bi bi-reply-fill"></i> Reply
+                        </button>
+                        <button class="btn btn-outline-secondary rounded-pill px-3 py-1-5 fw-semibold d-flex align-items-center gap-2" id="btn-archive">
+                            <i class="bi bi-archive-fill"></i> <span id="archive-btn-text">Archive</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Detail Body Content -->
+                <div class="card-body p-4 p-md-5">
+                    <!-- Subject Header -->
+                    <h3 class="fw-bold text-dark mb-4 tracking-tight" id="detail-subject">Email Subject Loading...</h3>
+
+                    <!-- Sender / Recipient Metadata Card -->
+                    <div class="d-flex align-items-start gap-3 p-3 bg-light-subtle rounded-3 border mb-4">
+                        <div class="avatar-circle rounded-circle bg-primary bg-opacity-10 text-primary fw-bold fs-5 d-flex align-items-center justify-content-center flex-shrink-0" id="detail-avatar" style="width: 48px; height: 48px;">
+                            ?
+                        </div>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex justify-content-between align-items-baseline flex-wrap gap-2">
+                                <h6 class="fw-bold text-dark mb-0 fs-6" id="detail-sender">Sender Email</h6>
+                                <span class="badge bg-white text-secondary border rounded-pill px-3 py-1 fw-normal" id="detail-timestamp">Timestamp</span>
+                            </div>
+                            <div class="text-secondary small mt-1">
+                                <span class="fw-medium">To:</span> <span id="detail-recipients">Recipients List</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <!-- Email Body Container -->
+                    <div class="email-body-content text-dark fs-6 lh-lg" id="detail-body" style="white-space: pre-wrap; word-break: break-word;">
+                        Email body content will be rendered here...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compose View -->
+        <section id="compose-view" class="view-section" style="display: none;">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mx-auto" style="max-width: 800px;">
+                <div class="card-header bg-white border-bottom p-3 p-md-4 d-flex align-items-center justify-content-between">
+                    <h4 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-pencil-square text-primary"></i> New Message
+                    </h4>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-medium">Draft</span>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form id="compose-form">
+                        <!-- Recipients Field -->
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control rounded-3 shadow-none" id="compose-recipients" placeholder="Recipients" required>
+                            <label for="compose-recipients"><i class="bi bi-people me-2 text-secondary"></i>Recipients (comma-separated)</label>
+                        </div>
+
+                        <!-- Subject Field -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-3 shadow-none" id="compose-subject" placeholder="Subject" required>
+                            <label for="compose-subject"><i class="bi bi-chat-left-text me-2 text-secondary"></i>Subject</label>
+                        </div>
+
+                        <!-- Body Field -->
+                        <div class="form-floating mb-4">
+                            <textarea class="form-control rounded-3 shadow-none" id="compose-body" placeholder="Write your message here..." style="height: 240px;" required></textarea>
+                            <label for="compose-body"><i class="bi bi-text-paragraph me-2 text-secondary"></i>Message Body</label>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex align-items-center justify-content-between border-top pt-4">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold" id="btn-discard-compose">
+                                <i class="bi bi-trash me-1"></i> Discard
+                            </button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2" id="btn-send-email">
+                                <span id="send-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                <i class="bi bi-send-fill" id="send-icon"></i>
+                                <span>Send Email</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-top py-3 text-center text-secondary small">
+        <div class="container-fluid">
+            <span>&copy; CS50 Mail Redesign &bull; Built with Vanilla JavaScript, HTML5 &amp; Bootstrap 5</span>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'inbox/inbox.js' %}"></script>
+{% endblock %}

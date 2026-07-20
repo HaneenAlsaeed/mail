@@ -1,0 +1,222 @@
+/* ==========================================================================
+   CS50 Mail Redesign - Custom Design System & Component Stylesheet
+   ========================================================================== */
+
+/* Design Tokens & CSS Variables */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --primary-border: #bfdbfe;
+    
+    --bg-app: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-secondary: #f1f5f9;
+
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+
+    --border-color: #e2e8f0;
+    --border-radius-sm: 8px;
+    --border-radius-md: 14px;
+    --border-radius-lg: 18px;
+    --border-radius-pill: 9999px;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 16px 32px -6px rgba(37, 99, 235, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+
+    --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Global Base Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navigation System */
+.navbar-brand {
+    letter-spacing: -0.02em;
+}
+
+.brand-icon-wrapper {
+    transition: transform var(--transition-fast);
+}
+
+.navbar-brand:hover .brand-icon-wrapper {
+    transform: scale(1.08) rotate(-5deg);
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--primary-color) !important;
+    background-color: var(--primary-light) !important;
+}
+
+/* Card & View Containers */
+.card {
+    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-surface);
+}
+
+/* Email List Items / Email Cards */
+.email-card {
+    position: relative;
+    padding: 1.15rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    user-select: none;
+    animation: fadeInSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.email-card:last-child {
+    border-bottom: none;
+}
+
+/* Unread Email Card Styling */
+.email-card.unread {
+    background-color: #ffffff;
+    font-weight: 500;
+    border-left: 4px solid var(--primary-color);
+}
+
+.email-card.unread .email-sender,
+.email-card.unread .email-subject {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Read Email Card Styling */
+.email-card.read {
+    background-color: var(--bg-surface-secondary);
+    border-left: 4px solid transparent;
+    opacity: 0.9;
+}
+
+.email-card.read .email-sender,
+.email-card.read .email-subject {
+    font-weight: 500;
+    color: #334155;
+}
+
+/* Hover Effect on Email Cards */
+.email-card:hover {
+    transform: translateY(-2px) scale(1.005);
+    box-shadow: var(--shadow-hover);
+    z-index: 5;
+    background-color: #ffffff !important;
+    border-radius: var(--border-radius-md);
+}
+
+/* Unread Dot Badge */
+.unread-indicator-dot {
+    width: 9px;
+    height: 9px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Search Bar Formatting */
+.search-input-group .form-control {
+    border-radius: var(--border-radius-pill);
+}
+
+.search-input-group .input-group-text {
+    border-top-left-radius: var(--border-radius-pill);
+    border-bottom-left-radius: var(--border-radius-pill);
+}
+
+.search-input-group .form-control {
+    border-top-right-radius: var(--border-radius-pill);
+    border-bottom-right-radius: var(--border-radius-pill);
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton-card {
+    background: #ffffff;
+    border-radius: var(--border-radius-md);
+}
+
+.skeleton-text {
+    height: 14px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-width-10 { width: 10%; }
+.skeleton-width-20 { width: 20%; }
+.skeleton-width-40 { width: 40%; }
+.skeleton-width-80 { width: 80%; }
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Toast Customization */
+#app-toast {
+    background: #0f172a;
+    border-radius: var(--border-radius-md);
+}
+
+/* Buttons and Inputs */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.form-floating .form-control:focus,
+.form-floating .form-control:not(:placeholder-shown) {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .email-card {
+        padding: 1rem;
+    }
+    
+    .email-card:hover {
+        transform: none;
+    }
+}

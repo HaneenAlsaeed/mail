@@ -1,0 +1,44 @@
+{% extends "inbox/layout.html" %}
+
+{% block body %}
+<div class="auth-container d-flex align-items-center justify-content-center min-vh-100 bg-light-subtle py-5">
+    <div class="card auth-card shadow-lg border-0 rounded-4 p-4 p-md-5" style="max-width: 440px; width: 100%;">
+        <div class="text-center mb-4">
+            <div class="auth-logo-badge mb-3 d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary p-3" style="width: 64px; height: 64px;">
+                <i class="bi bi-envelope-open-fill fs-2"></i>
+            </div>
+            <h2 class="fw-bold text-dark mb-1">Welcome Back</h2>
+            <p class="text-secondary small">Sign in to access your CS50 Mailbox</p>
+        </div>
+
+        {% if message %}
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 small mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control rounded-3" id="emailInput" name="email" placeholder="name@example.com" required autofocus autocomplete="email">
+                <label for="emailInput"><i class="bi bi-envelope me-2 text-secondary"></i>Email Address</label>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control rounded-3" id="passwordInput" name="password" placeholder="Password" required autocomplete="current-password">
+                <label for="passwordInput"><i class="bi bi-lock me-2 text-secondary"></i>Password</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 fw-semibold shadow-sm mb-3">
+                Sign In <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </form>
+
+        <div class="text-center pt-3 border-top mt-3">
+            <span class="text-secondary small">Don't have an account?</span>
+            <a href="{% url 'register' %}" class="fw-semibold text-primary text-decoration-none ms-1">Register here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
