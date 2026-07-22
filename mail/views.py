@@ -14,7 +14,7 @@ def index(request):
 
     # Authenticated users view their inbox
     if request.user.is_authenticated:
-        return render(request, "inbox/inbox.html")
+        return render(request, "mail/inbox.html")
 
     # Everyone else is prompted to sign in
     else:
@@ -139,7 +139,7 @@ def login_view(request):
                 "message": "Invalid email and/or password."
             })
     else:
-        return render(request, "inbox/login.html")
+        return render(request, "mail/login.html")
 
 
 def logout_view(request):
@@ -155,7 +155,7 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "inbox/register.html", {
+            return render(request, "mail/register.html", {
                 "message": "Passwords must match."
             })
 
@@ -164,10 +164,10 @@ def register(request):
             user = User.objects.create_user(email, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "inbox/register.html", {
+            return render(request, "mail/register.html", {
                 "message": "Email address already taken."
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "inbox/register.html")
+        return render(request, "mail/register.html")

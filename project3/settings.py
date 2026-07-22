@@ -8,7 +8,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'inbox',
+    'mail',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +54,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'inbox.User'
+AUTH_USER_MODEL = 'mail.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
